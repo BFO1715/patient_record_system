@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Statistics</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <h1>Patient Statistics</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="add_patient.html">Add Patient</a>
+      <a href="view_patients.html">View Patients</a>
+    </nav>
+  </header>
+  <main>
+    <h2>Statistics</h2>
+    <div id="statistics">
+      <p>Average BMI (Male): <span id="avgBmiMale">0</span></p>
+      <p>Average BMI (Female): <span id="avgBmiFemale">0</span></p>
+      <p>Number of Patients by BMI Category:</p>
+      <ul>
+        <li>Underweight: <span id="underweightCount">0</span></li>
+        <li>Normal: <span id="normalCount">0</span></li>
+        <li>Overweight: <span id="overweightCount">0</span></li>
+        <li>Obese: <span id="obeseCount">0</span></li>
+      </ul>
+      <p>Total Patients: <span id="totalPatients">0</span></p>
+      <p>Female Patients (50+ years): <span id="female50Plus">0</span></p>
+    </div>
+  </main>
+  <script>
+    const patients = JSON.parse(localStorage.getItem('patients')) || [];
+
+    function calculateStatistics() {
+      let maleBMI = 0, femaleBMI = 0;
+      let maleCount = 0, femaleCount = 0;
+      let bmiCategories = { underweight: 0, normal: 0, overweight: 0, obese: 0 };
+      let female50Plus = 0;
+
+      patients.forEach(patient => {
+        const bmi = patient.weight / ((patient.height / 100) ** 2);
+        const category = getBMICategory(bmi);
+
+        bmiCategories[category.toLowerCase()]++;
+
+        if (patient.sex === 'male') {
+          maleBMI += bmi;
+          maleCount++;
+        } else if (patient.sex === 'female') {
+          femaleBMI += bmi;
+          femaleCount++;
+          if (calculateAge(patient.dob) >= 50) {
+            female50Plus++;
+          }
+        }
+      });
+
+      document.getElementById('avgBmiMale').textContent = (maleBMI / maleCount || 0).toFixed(2);
+      document.getElementById('avgBmiFemale').textContent = (femaleBMI / femaleCount || 0).toFixed(2);
+
+      document.getElementById('underweightCount').textContent = bmiCategories.underweight;
+      document.getElementById('normalCount').textContent = bmiCategories.normal;
+      document.getElementById('overweightCount').textContent = bmiCategories.overweight;
+      document.getElementById('obeseCount').textContent = bmiCategories.obese;
+
+      document.getElementById('totalPatients').textContent = patients.length;
+      document.getElementById('female50Plus').textContent = female50Plus;
+    }
+
+    function getBMICategory(bmi) {
+      if (bmi < 18.5) return 'Underweight';
+      if (bmi < 25) return 'Normal';
+      if (bmi < 30) return 'Overweight';
+      return 'Obese';
+    }
+
+    function calculateAge(dob) {
+      const birthDate = new Date(dob);
+      const today = new Date();
+      return today.getFullYear() - birthDate.getFullYear() - (today < new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate()) ? 1 : 0);
+    }
+
+    calculateStatistics();
+  </script>
+</body>
+</html>
