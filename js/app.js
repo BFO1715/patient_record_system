@@ -1,10 +1,8 @@
 import { validatePatient } from './validation.js';
 
-// Form and message elements
 const form = document.getElementById('addPatientForm');
 const message = document.getElementById('message');
 
-// Handle patient form submission
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -34,8 +32,9 @@ form.addEventListener('submit', (e) => {
   patients.push(patient);
   localStorage.setItem('patients', JSON.stringify(patients));
 
-  // Notify the user and reset the form
+  // Notify user and reset form
   message.textContent = 'Patient added successfully!';
   message.style.color = 'green';
   form.reset();
 });
+
