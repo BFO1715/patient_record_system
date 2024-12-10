@@ -17,19 +17,6 @@ function formatDOB(dob) {
   return `${day}-${month}-${year}`;
 }
 
-// Calculate BMI
-function calculateBMI(weight, height) {
-  return (weight / ((height / 100) ** 2)).toFixed(2);
-}
-
-// Get BMI Category
-function getBMICategory(bmi) {
-  if (bmi < 18.5) return 'Underweight';
-  if (bmi < 24.9) return 'Normal weight';
-  if (bmi < 29.9) return 'Overweight';
-  return 'Obese';
-}
-
 // Close modal utility
 function closeModal(modal) {
   if (modal) {
@@ -37,7 +24,7 @@ function closeModal(modal) {
   }
 }
 
-// Display a modal with buttons for actions
+// Show a modal with action buttons for a patient
 function showPatientActions(patient) {
   const modal = document.createElement('div');
   modal.style.position = 'fixed';
@@ -81,10 +68,8 @@ function showPatientActions(patient) {
   });
 }
 
-// Show patient details in a popup
+// Show patient details
 function showPatientDetails(patient) {
-  const bmi = calculateBMI(patient.weight, patient.height);
-  const bmiCategory = getBMICategory(bmi);
   alert(`
     Patient Details:
     ----------------
@@ -97,8 +82,6 @@ function showPatientDetails(patient) {
     - Mobile: ${patient.mobile}
     - Email: ${patient.email}
     - Health Info: ${patient.healthInfo || 'None'}
-    - BMI: ${bmi}
-    - BMI Category: ${bmiCategory}
   `);
 }
 
@@ -169,6 +152,7 @@ function modifyPatient(patient) {
 
   document.body.appendChild(modal);
 
+  // Handle save changes
   form.querySelector('#saveChanges').addEventListener('click', () => {
     patient.firstName = document.getElementById('firstName').value;
     patient.lastName = document.getElementById('lastName').value;
@@ -180,24 +164,18 @@ function modifyPatient(patient) {
     patient.email = document.getElementById('email').value;
     patient.healthInfo = document.getElementById('healthInfo').value;
 
-    const error = validatePatient(patient);
-    if (error) {
-      alert(error);
-      return;
-    }
-
     const patients = getPatients();
     const index = patients.findIndex(p => p.id === patient.id);
     if (index !== -1) {
       patients[index] = patient;
       savePatients(patients);
-      alert('Patient record updated successfully!');
-      displayPatients();
+      displayPatients(); // Refresh the table
     }
 
-    closeModal(modal); // Close the modal after saving changes
+    closeModal(modal); // Close the popup
   });
 
+  // Handle cancel changes
   form.querySelector('#cancelChanges').addEventListener('click', () => {
     closeModal(modal);
   });
@@ -210,8 +188,7 @@ function deletePatient(patient) {
     const patients = getPatients();
     const updatedPatients = patients.filter(p => p.id !== patient.id);
     savePatients(updatedPatients);
-    alert('Patient record deleted successfully!');
-    displayPatients();
+    displayPatients(); // Refresh the table
   }
 }
 
@@ -241,6 +218,7 @@ function displayPatients(filteredPatients = getPatients()) {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => displayPatients());
+
 
 
 
