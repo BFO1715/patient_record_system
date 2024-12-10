@@ -1,45 +1,9 @@
-import { calculateAge, getBMICategory } from './validation.js';
-
-// Load patients from local storage
-const patients = JSON.parse(localStorage.getItem('patients')) || [];
-
-// Calculate and display statistics
-function calculateStatistics() {
-  let maleBMI = 0, femaleBMI = 0;
-  let maleCount = 0, femaleCount = 0;
-  let bmiCategories = { underweight: 0, normal: 0, overweight: 0, obese: 0 };
-  let female50Plus = 0;
-
-  patients.forEach(patient => {
-    const bmi = patient.weight / ((patient.height / 100) ** 2);
-    const category = getBMICategory(bmi);
-
-    bmiCategories[category.toLowerCase()]++;
-
-    if (patient.sex === 'male') {
-      maleBMI += bmi;
-      maleCount++;
-    } else if (patient.sex === 'female') {
-      femaleBMI += bmi;
-      femaleCount++;
-      if (calculateAge(patient.dob) >= 50) {
-        female50Plus++;
-      }
-    }
-  });
-
-  // Update DOM
-  document.getElementById('avgBmiMale').textContent = (maleBMI / maleCount || 0).toFixed(2);
-  document.getElementById('avgBmiFemale').textContent = (femaleBMI / femaleCount || 0).toFixed(2);
-
-  document.getElementById('underweightCount').textContent = bmiCategories.underweight;
-  document.getElementById('normalCount').textContent = bmiCategories.normal;
-  document.getElementById('overweightCount').textContent = bmiCategories.overweight;
-  document.getElementById('obeseCount').textContent = bmiCategories.obese;
-
-  document.getElementById('totalPatients').textContent = patients.length;
-  document.getElementById('female50Plus').textContent = female50Plus;
+export function validatePatient(patient) {
+  if (!patient.firstName || !patient.lastName) return 'Name is required.';
+  if (!patient.dob) return 'Date of Birth is required.';
+  if (isNaN(patient.height) || patient.height <= 0) return 'Invalid height.';
+  if (isNaN(patient.weight) || patient.weight <= 0) return 'Invalid weight.';
+  if (!patient.mobile) return 'Mobile number is required.';
+  if (!patient.email.includes('@')) return 'Invalid email.';
+  return null;
 }
-
-// Run on page load
-document.addEventListener('DOMContentLoaded', calculateStatistics);
