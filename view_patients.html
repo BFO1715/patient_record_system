@@ -16,25 +16,29 @@
     </nav>
   </header>
   <main>
-    <h2>Patient Records</h2>
-    <input type="text" id="searchBar" placeholder="Search by name or ID">
-    <table id="patientsTable">
-      <thead>
-        <tr>
-          <th>Patient ID</th>
-          <th>Name</th>
-          <th>Age</th>
-          <th>BMI</th>
-          <th>BMI Category</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Patient records will be here -->
-      </tbody>
-    </table>
+    <div class="card">
+      <h2>Patient Records</h2>
+      <input type="text" id="searchBar" placeholder="Search by name or ID">
+      <table id="patientsTable">
+        <thead>
+          <tr>
+            <th>Patient ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>BMI</th>
+            <th>BMI Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="patientData">
+          <!-- Patient rows will be dynamically populated here -->
+        </tbody>
+      </table>
+    </div>
   </main>
-  <!-- JavaScript -->
+  <footer>
+    <p>&copy; 2024 GP Surgery</p>
+  </footer>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
