@@ -1,4 +1,4 @@
-import { validatePatient, calculateAge, getBMICategory } from './validation.js';
+import { validatePatient } from './validation.js';
 
 // Form and message elements
 const form = document.getElementById('addPatientForm');
@@ -8,9 +8,8 @@ const message = document.getElementById('message');
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  // Collect patient data from the form
   const patient = {
-    id: `PAT-${Date.now()}`, // Unique patient ID (corrected syntax with backticks)
+    id: `PAT-${Date.now()}`,
     firstName: document.getElementById('firstName').value.trim(),
     lastName: document.getElementById('lastName').value.trim(),
     dob: document.getElementById('dob').value,
@@ -25,18 +24,14 @@ form.addEventListener('submit', (e) => {
   // Validate patient inputs
   const error = validatePatient(patient);
   if (error) {
-    message.textContent = error; // Display validation error
+    message.textContent = error;
     message.style.color = 'red';
     return;
   }
 
-  // Retrieve existing patients from localStorage or initialize an empty array
+  // Save to localStorage
   const patients = JSON.parse(localStorage.getItem('patients')) || [];
-
-  // Add the new patient to the array
   patients.push(patient);
-
-  // Save the updated patient array to localStorage
   localStorage.setItem('patients', JSON.stringify(patients));
 
   // Notify the user and reset the form
@@ -44,15 +39,3 @@ form.addEventListener('submit', (e) => {
   message.style.color = 'green';
   form.reset();
 });
-
-// Utility functions for patient display (for integration into other pages)
-export function getPatients() {
-  return JSON.parse(localStorage.getItem('patients')) || [];
-}
-
-export function deletePatient(id) {
-  const patients = getPatients();
-  const updatedPatients = patients.filter(patient => patient.id !== id);
-  localStorage.setItem('patients', JSON.stringify(updatedPatients));
-  return updatedPatients;
-}
