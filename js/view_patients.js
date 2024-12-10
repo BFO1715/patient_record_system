@@ -12,20 +12,28 @@ function formatDOB(dob) {
   return `${day}-${month}-${year}`;
 }
 
-// Format Patient ID to PAT-1234 (4-digit random ID)
+// Ensure Patient ID is properly formatted
 function formatPatientID(id) {
-  // Ensure ID is already in short format, if not, generate a new one
-  const match = id.match(/^PAT-\d{4}$/);
-  if (match) {
-    return id; // ID is already in the correct format
-  }
-  return `PAT-${Math.floor(1000 + Math.random() * 9000)}`; // Generate a new ID
+  return id.startsWith('PAT-') ? id : `PAT-${Math.floor(1000 + Math.random() * 9000)}`;
+}
+
+// Calculate BMI
+function calculateBMI(weight, height) {
+  return (weight / ((height / 100) ** 2)).toFixed(2);
+}
+
+// Get BMI Category
+function getBMICategory(bmi) {
+  if (bmi < 18.5) return 'Underweight';
+  if (bmi < 24.9) return 'Normal weight';
+  if (bmi < 29.9) return 'Overweight';
+  return 'Obese';
 }
 
 // Display patients in the table
 function displayPatients(filteredPatients = getPatients()) {
   const tableBody = document.getElementById('patientData');
-  const patients = getPatients(); // Original patients list from storage
+  const patients = getPatients();
 
   tableBody.innerHTML = '';
 
@@ -34,27 +42,48 @@ function displayPatients(filteredPatients = getPatients()) {
     return;
   }
 
-  // Ensure all patient IDs are properly formatted and update the local storage
   filteredPatients.forEach((patient) => {
-    if (!/^PAT-\d{4}$/.test(patient.id)) {
-      patient.id = formatPatientID(patient.id); // Reformat Patient ID
-    }
-  });
+    // Ensure the Patient ID is static and properly formatted
+    patient.id = patient.id || formatPatientID(`PAT-${Math.floor(1000 + Math.random() * 9000)}`);
 
-  // Save the updated patient list back to local storage
-  localStorage.setItem('patients', JSON.stringify(patients));
-
-  // Populate the table
-  filteredPatients.forEach((patient) => {
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${patient.id}</td>
+      <td class="clickable" data-id="${patient.id}" style="color: #007bff; text-decoration: underline; cursor: pointer;">${patient.id}</td>
       <td>${patient.firstName}</td>
       <td>${patient.lastName}</td>
       <td>${formatDOB(patient.dob)}</td>
     `;
+
+    // Add click event to display patient details
+    row.querySelector('.clickable').addEventListener('click', () => showPatientDetails(patient));
+
     tableBody.appendChild(row);
   });
+
+  // Save updated patient data with static IDs back to local storage
+  localStorage.setItem('patients', JSON.stringify(patients));
+}
+
+// Show patient details in a popup
+function showPatientDetails(patient) {
+  const bmi = calculateBMI(patient.weight, patient.height);
+  const bmiCategory = getBMICategory(bmi);
+  const details = `
+    Patient Details:
+    ----------------
+    - ID: ${patient.id}
+    - Name: ${patient.firstName} ${patient.lastName}
+    - Date of Birth: ${formatDOB(patient.dob)}
+    - Height: ${patient.height} cm
+    - Weight: ${patient.weight} kg
+    - Sex: ${patient.sex}
+    - Mobile: ${patient.mobile}
+    - Email: ${patient.email}
+    - Health Info: ${patient.healthInfo || 'None'}
+    - BMI: ${bmi}
+    - BMI Category: ${bmiCategory}
+  `;
+  alert(details);
 }
 
 // Search functionality
@@ -76,6 +105,8 @@ document.getElementById('searchBar').addEventListener('input', function () {
 
 // Initialize the display of patients on page load
 document.addEventListener('DOMContentLoaded', () => displayPatients());
+
+
 
 
 
