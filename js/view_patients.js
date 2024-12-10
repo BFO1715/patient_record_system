@@ -14,7 +14,12 @@ function formatDOB(dob) {
 
 // Format Patient ID to PAT-1234 (4-digit random ID)
 function formatPatientID(id) {
-  return `PAT-${String(Math.floor(Math.random() * 9000) + 1000)}`;
+  // Ensure ID is already in short format, if not, generate a new one
+  const match = id.match(/^PAT-\d{4}$/);
+  if (match) {
+    return id; // ID is already in the correct format
+  }
+  return `PAT-${Math.floor(1000 + Math.random() * 9000)}`; // Generate a new ID
 }
 
 // Display patients in the table
@@ -29,12 +34,18 @@ function displayPatients(filteredPatients = getPatients()) {
     return;
   }
 
+  // Ensure all patient IDs are properly formatted and update the local storage
   filteredPatients.forEach((patient) => {
-    // Ensure Patient ID is in proper format
-    if (!/PAT-\d{4}/.test(patient.id)) {
-      patient.id = formatPatientID();
+    if (!/^PAT-\d{4}$/.test(patient.id)) {
+      patient.id = formatPatientID(patient.id); // Reformat Patient ID
     }
+  });
 
+  // Save the updated patient list back to local storage
+  localStorage.setItem('patients', JSON.stringify(patients));
+
+  // Populate the table
+  filteredPatients.forEach((patient) => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${patient.id}</td>
@@ -44,9 +55,6 @@ function displayPatients(filteredPatients = getPatients()) {
     `;
     tableBody.appendChild(row);
   });
-
-  // Save updated patient list with formatted IDs back to local storage
-  localStorage.setItem('patients', JSON.stringify(patients));
 }
 
 // Search functionality
@@ -68,5 +76,6 @@ document.getElementById('searchBar').addEventListener('input', function () {
 
 // Initialize the display of patients on page load
 document.addEventListener('DOMContentLoaded', () => displayPatients());
+
 
 

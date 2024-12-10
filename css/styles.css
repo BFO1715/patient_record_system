@@ -131,11 +131,6 @@ footer {
   background-color: #f1f1f1;
 }
 
-/* Add space between the search bar and the table */
-.spacer {
-  margin-top: 20px;
-}
-
 /* Adjust table columns for better symmetry */
 #patientsTable th, #patientsTable td {
   text-align: center;
